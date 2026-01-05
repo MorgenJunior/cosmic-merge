@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="description" content="Cosmic Merge - A space-themed merge puzzle game">
+    <title>⭐ COSMIC MERGE - Merge Puzzle Game</title>
+    
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/animations.css">
+    
+    <!-- Preconnect for faster loading -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    
+    <!-- Google AdSense - ADD YOUR CODE HERE AFTER APPROVAL -->
+    <!-- 
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX"
+         crossorigin="anonymous"></script>
+    -->
+</head>
+<body>
+    <!-- Main Container -->
+    <div id="app" class="app-container">
+        
+        <!-- Header -->
+        <header class="header">
+            <div class="header-left">
+                <h1 class="game-title">⭐ COSMIC MERGE</h1>
+            </div>
+            <div class="header-right">
+                <button id="soundBtn" class="icon-btn" title="Sound">🔊</button>
+                <button id="settingsBtn" class="icon-btn" title="Settings">⚙️</button>
+                <button id="leaderboardBtn" class="icon-btn" title="Leaderboard">👤</button>
+            </div>
+        </header>
+
+        <!-- Score Display -->
+        <div class="score-container">
+            <div class="score-box">
+                <div class="score-label">SCORE</div>
+                <div id="currentScore" class="score-value">0</div>
+            </div>
+            <div class="score-box">
+                <div class="score-label">HIGH SCORE</div>
+                <div id="highScore" class="score-value">0</div>
+            </div>
+        </div>
+
+        <!-- Next Tile Preview -->
+        <div class="next-tile-container">
+            <div class="next-label">NEXT:</div>
+            <div id="nextTilePreview" class="next-tile-preview">
+                <div class="preview-tile">🌑</div>
+            </div>
+        </div>
+
+        <!-- Game Grid -->
+        <div class="game-container">
+            <canvas id="gameCanvas" width="800" height="800"></canvas>
+            <div id="gridOverlay" class="grid-overlay"></div>
+            <div id="particleContainer" class="particle-container"></div>
+        </div>
+
+        <!-- Power-ups -->
+        <div class="powerups-container">
+            <button id="supernovaPowerup" class="powerup-btn" data-powerup="supernova">
+                <div class="powerup-icon">⚡</div>
+                <div class="powerup-count" id="supernovaCount">3</div>
+                <div class="powerup-label">Supernova</div>
+            </button>
+            <button id="blackholePowerup" class="powerup-btn" data-powerup="blackhole">
+                <div class="powerup-icon">🌀</div>
+                <div class="powerup-count" id="blackholeCount">2</div>
+                <div class="powerup-label">Black Hole</div>
+            </button>
+            <button id="timewarpPowerup" class="powerup-btn" data-powerup="timewarp">
+                <div class="powerup-icon">⏰</div>
+                <div class="powerup-count" id="timewarpCount">1</div>
+                <div class="powerup-label">Time Warp</div>
+            </button>
+        </div>
+
+        <!-- Banner Ad -->
+        <div id="bannerAd" class="banner-ad">
+            <!-- AdSense Banner Ad - REPLACE AFTER APPROVAL -->
+            <!-- 
+            <ins class="adsbygoogle"
+                 style="display:block"
+                 data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+                 data-ad-slot="XXXXXXXXXX"
+                 data-ad-format="auto"
+                 data-full-width-responsive="true"></ins>
+            <script>
+                 (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
+            -->
+            <div class="ad-placeholder">📺 Banner Ad Space (Add after AdSense approval)</div>
+        </div>
+    </div>
+
+    <!-- Interstitial Ad Container (for fullscreen ads) -->
+    <div id="interstitialAdContainer" class="modal hidden">
+        <div class="modal-content ad-modal">
+            <!-- AdSense Interstitial - REPLACE AFTER APPROVAL -->
+            <div class="ad-placeholder-large">
+                📺 Advertisement
+                <p style="font-size: 14px; margin-top: 10px;">Game will resume shortly...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Game Over Modal -->
+    <div id="gameOverModal" class="modal hidden">
+        <div class="modal-content">
+            <h2 class="modal-title">🌌 GAME OVER</h2>
+            <div class="final-score-container">
+                <div class="final-score-label">FINAL SCORE</div>
+                <div id="finalScore" class="final-score-value">0</div>
+            </div>
+            <div class="high-score-message" id="highScoreMessage"></div>
+            <div class="modal-buttons">
+                <button id="playAgainBtn" class="btn btn-primary">🔄 PLAY AGAIN</button>
+                <button id="watchAdBtn" class="btn btn-secondary">📺 WATCH AD (+1 RETRY)</button>
+            </div>
+            <button id="shareScoreBtn" class="btn btn-outline">📤 SHARE SCORE</button>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settingsModal" class="modal hidden">
+        <div class="modal-content">
+            <h2 class="modal-title">⚙️ SETTINGS</h2>
+            <div class="settings-grid">
+                <div class="setting-item">
+                    <label for="musicToggle">Background Music</label>
+                    <input type="checkbox" id="musicToggle" class="toggle" checked>
+                </div>
+                <div class="setting-item">
+                    <label for="sfxToggle">Sound Effects</label>
+                    <input type="checkbox" id="sfxToggle" class="toggle" checked>
+                </div>
+                <div class="setting-item">
+                    <label for="tapModeToggle">Tap Mode (Simple Controls)</label>
+                    <input type="checkbox" id="tapModeToggle" class="toggle">
+                </div>
+                <div class="setting-item">
+                    <label for="gridSizeSelect">Grid Size</label>
+                    <select id="gridSizeSelect" class="select">
+                        <option value="6">6x6 (Easy)</option>
+                        <option value="8" selected>8x8 (Normal)</option>
+                        <option value="10">10x10 (Hard)</option>
+                    </select>
+                </div>
+            </div>
+            <button id="closeSettingsBtn" class="btn btn-primary">✓ DONE</button>
+        </div>
+    </div>
+
+    <!-- Leaderboard Modal -->
+    <div id="leaderboardModal" class="modal hidden">
+        <div class="modal-content">
+            <h2 class="modal-title">🏆 LEADERBOARD</h2>
+            <div class="leaderboard-tabs">
+                <button class="tab-btn active" data-tab="global">Global</button>
+                <button class="tab-btn" data-tab="daily">Daily</button>
+                <button class="tab-btn" data-tab="weekly">Weekly</button>
+            </div>
+            <div id="leaderboardContent" class="leaderboard-content">
+                <div class="leaderboard-list">
+                    <!-- Populated by JavaScript -->
+                </div>
+            </div>
+            <button id="closeLeaderboardBtn" class="btn btn-primary">✓ CLOSE</button>
+        </div>
+    </div>
+
+    <!-- Daily Challenge Banner -->
+    <div id="dailyChallenge" class="daily-challenge hidden">
+        <div class="challenge-content">
+            <div class="challenge-icon">🎯</div>
+            <div class="challenge-text">
+                <div class="challenge-title">DAILY CHALLENGE</div>
+                <div id="challengeDescription" class="challenge-description">Reach 10,000 points!</div>
+            </div>
+            <button id="startChallengeBtn" class="btn btn-small">START</button>
+        </div>
+    </div>
+
+    <!-- Loading Screen -->
+    <div id="loadingScreen" class="loading-screen">
+        <div class="loading-content">
+            <div class="loading-spinner">🌌</div>
+            <div class="loading-text">Loading Cosmic Merge...</div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer style="position: fixed; bottom: 5px; width: 100%; text-align: center; font-size: 11px; color: rgba(255,255,255,0.5); z-index: 1;">
+        <a href="privacy.html" style="color: rgba(255,255,255,0.7); text-decoration: none;">Privacy Policy</a>
+    </footer>
+
+    <!-- External Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+    
+    <!-- CrazyGames SDK (Optional - uncomment when deploying) -->
+    <!-- <script src="https://sdk.crazygames.com/crazygames-sdk-v2.js"></script> -->
+    
+    <!-- Game Scripts -->
+    <script src="js/tile.js"></script>
+    <script src="js/grid.js"></script>
+    <script src="js/physics.js"></script>
+    <script src="js/merge.js"></script>
+    <script src="js/score.js"></script>
+    <script src="js/powerups.js"></script>
+    <script src="js/audio.js"></script>
+    <script src="js/leaderboard.js"></script>
+    <script src="js/ads.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
